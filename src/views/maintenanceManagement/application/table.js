@@ -24,13 +24,8 @@ const columns = [
     minWidth: '40px'
   },
   {
-    title: '车牌',
-    key: 'licenseNumber',
-    minWidth: '40px'
-  },
-  {
-    title: '车型',
-    key: 'vehicleType',
+    title: '车辆ID',
+    key: 'vehicleId',
     minWidth: '40px'
   },
   {
@@ -43,13 +38,19 @@ const columns = [
     key: 'expectCompleteTime'
   },
   {
+    title: '申请人ID',
+    key: 'applicantId',
+    minWidth: '40px'
+  },
+  {
     title: '申请时间',
     key: 'createTime',
     sortable: true
   },
   {
     title: '更新时间',
-    key: 'updateTime'
+    key: 'updateTime',
+    sortable: true
   }
 ]
 

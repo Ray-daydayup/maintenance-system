@@ -10,6 +10,7 @@ export const handle200 = function(response, formatRes) {
 }
 
 export const handle500 = function(response) {
+  console.log(response, 'handle 500 error')
   if (response.code >= 2101 && response.code <= 2104) {
     router.push({ name: 'Login' })
   }

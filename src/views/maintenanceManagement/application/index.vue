@@ -3,6 +3,7 @@
     <dialog-form
       :visible.sync="dialogTableVisible"
       title="新增维修申请"
+      @refresh="getList"
     ></dialog-form>
     <el-tab-pane label="维修申请" disabled>
       <d2-crud
@@ -13,7 +14,7 @@
         :options="options"
         :rowHandle="rowHandle"
         selection-row
-        @row-remove="handleRowRemove"
+        @row-remove="delRow"
         @selection-change="handleSelectionChange"
         @edit-handle="editRow"
         @commit-handle="commitRow"
@@ -26,26 +27,6 @@
           icon="el-icon-plus"
           @click="addRow"
           >新增申请</el-button
-        >
-        <el-button
-          round
-          slot="header"
-          type="danger"
-          style="margin-bottom: 5px"
-          icon="el-icon-delete"
-          @click="handleRowRemove"
-          :disabled="hasSelected"
-          >批量删除</el-button
-        >
-        <el-button
-          round
-          slot="header"
-          type="success"
-          style="margin-bottom: 5px"
-          icon="el-icon-success"
-          :disabled="hasSelected"
-          @click="commitRow"
-          >批量提交</el-button
         >
       </d2-crud>
     </el-tab-pane>
@@ -92,23 +73,27 @@ export default {
       this.selected = selected
       console.log(selected)
     },
-    handleRowRemove({ index, row }, done) {
-      setTimeout(() => {
-        console.log(index)
-        console.log(row)
+    async delRow({ index, row }, done) {
+      console.log(row)
+      const res = await api.del(row.id)
+      if (res.data) {
         this.$message({
           message: '删除成功',
           type: 'success'
         })
         done()
-      }, 300)
+        return
+      }
+      this.$message({
+        message: '删除失败',
+        type: 'error'
+      })
     },
-    addRow(e) {
+    addRow() {
       this.dialogTableVisible = true
-      console.log(e)
     },
-    editRow(e) {
-      console.log(e)
+    editRow() {
+      this.dialogTableVisible = true
     },
     commitRow(e) {
       this.$confirm('是否提交本条申请?', '提示', {

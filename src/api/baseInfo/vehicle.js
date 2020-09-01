@@ -1,10 +1,10 @@
 import http from '@/utils/http'
 
-const urlPrefix = '/repair/apply'
+const urlPrefix = '/baseinfo/vehicle'
 
-export async function getList() {
-  const url = urlPrefix + '/getList'
-  const res = http.get(url)
+export async function getList(data) {
+  const url = urlPrefix + '/list'
+  const res = http.post(url, data)
   return res
 }
 export async function add(data) {
@@ -12,14 +12,11 @@ export async function add(data) {
   const res = http.post(url, data)
   return res
 }
-export async function commit(id) {
-  const url = urlPrefix + '/apply'
-  const res = http.post(url, id)
-  return res
-}
+
 export async function del(id) {
   const url = urlPrefix + '/delete'
-  const res = http.post(url, id)
+  const params = { id }
+  const res = http.get(url, { params })
   return res
 }
 export async function update(data) {
@@ -31,7 +28,6 @@ export async function update(data) {
 export default {
   getList,
   add,
-  commit,
   del,
   update
 }

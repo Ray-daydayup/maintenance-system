@@ -28,6 +28,10 @@ export default {
         return true
       }
       return false
+    },
+    loginOut({ commit }) {
+      commit('SET_TOKEN', '')
+      commit('SET_USER', null)
     }
   }
 }

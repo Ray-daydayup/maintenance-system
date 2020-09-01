@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-bind="$attrs" v-on="$listeners" @open="onOpen" @close="onClose">
+  <el-dialog v-bind="$attrs" v-on="$listeners" @close="onClose">
     <el-form
       ref="elForm"
       :model="formData"
@@ -7,29 +7,22 @@
       size="medium"
       label-width="110px"
     >
-      <el-form-item label="下拉选择" prop="licenseNumber">
+      <el-form-item label="车辆ID" prop="vehicleId">
         <el-select
-          v-model="formData.licenseNumber"
+          v-model="formData.vehicleId"
           placeholder="请输入关键字"
           filterable
           clearable
           :style="{ width: '50%' }"
         >
           <el-option
-            v-for="(item, index) in licenseNumberOptions"
+            v-for="(item, index) in vehicleOptions"
             :key="index"
             :label="item.label"
             :value="item.value"
             :disabled="item.disabled"
           ></el-option>
         </el-select>
-      </el-form-item>
-      <el-form-item label="车型" prop="vehicleType">
-        <el-input
-          v-model="formData.vehicleType"
-          :disabled="true"
-          :style="{ width: '50%' }"
-        ></el-input>
       </el-form-item>
       <el-form-item label="任务名称" prop="name">
         <el-input
@@ -69,32 +62,27 @@
   </el-dialog>
 </template>
 <script>
+import { getList as getVehicleList } from '@/api/baseInfo/vehicle'
+import api from '@/api/maintenance/application'
 export default {
   inheritAttrs: false,
   components: {},
   props: [],
   data() {
     return {
+      applicantId: this.$store.state.user.userInfo.id,
       formData: {
-        licenseNumber: '',
-        vehicleType: undefined,
+        vehicleId: undefined,
         name: '',
         expectCompleteTime: null,
         troubles: undefined
       },
       rules: {
-        licenseNumber: [
+        vehicleId: [
           {
             required: true,
             message: '请输入关键字',
             trigger: 'change'
-          }
-        ],
-        vehicleType: [
-          {
-            required: true,
-            message: '请输入车型',
-            trigger: 'blur'
           }
         ],
         name: [
@@ -119,24 +107,23 @@ export default {
           }
         ]
       },
-      licenseNumberOptions: [
-        {
-          label: '选项一',
-          value: 1
-        },
-        {
-          label: '选项二',
-          value: 2
-        }
-      ]
+      vehicleOptions: []
     }
   },
-  computed: {},
-  watch: {},
-  created() {},
-  mounted() {},
+  mounted() {
+    this.getVehicleList({ all: true })
+    console.log(this.$store.state.user)
+  },
   methods: {
-    onOpen() {},
+    async getVehicleList(data) {
+      const res = await getVehicleList(data)
+      if (res.flag) {
+        this.vehicleOptions = res.data.list.map((item) => ({
+          label: item.licenseNumber,
+          value: item.id
+        }))
+      }
+    },
     onClose() {
       this.$refs.elForm.resetFields()
     },
@@ -144,8 +131,12 @@ export default {
       this.$emit('update:visible', false)
     },
     handelConfirm() {
-      this.$refs.elForm.validate((valid) => {
+      this.$refs.elForm.validate(async (valid) => {
         if (!valid) return
+        const data = { applicantId: this.applicantId, ...this.formData }
+        const res = await api.add(data)
+        console.log(res)
+        this.$emit('refresh')
         this.close()
       })
     }
