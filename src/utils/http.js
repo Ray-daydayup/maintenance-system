@@ -1,7 +1,7 @@
 import axios from 'axios'
-// import tokenUnless from './tokenUnless'
-// import { getToken } from './token'
+import { getToken } from './token'
 import handleResponse from './httpException/index'
+import router from '@/router'
 
 const http = axios.create({
   baseURL: '/api',
@@ -14,14 +14,15 @@ const http = axios.create({
 // 请求拦截器
 http.interceptors.request.use(
   async (config) => {
-    // const flag = tokenUnless.unless(['/user/login']).checkUrl(config.url)
-    // if (flag) {
-    //   const token = getToken()
-    //   if (token) {
-    //     config.headers.Authorization = `Bearer ${token}`
-    //   }
-    // }
-    // console.log(config)
+    if (config.url === '/admin/login') {
+      return config
+    }
+    const token = getToken()
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    } else {
+      router.push({ name: 'Login' })
+    }
     return config
   },
   (error) => {
@@ -32,17 +33,13 @@ http.interceptors.request.use(
 // 响应拦截器
 http.interceptors.response.use(
   (response) => {
-    // if (handleResponse(response)) {
-    //   return response.data
-    // }
     const result = handleResponse(response)
     console.log(result)
     return result
-    // return response
   },
   (error) => {
+    console.log(error.response)
     return handleResponse(error.response)
-    // return error
   }
 )
 

@@ -25,9 +25,6 @@ export default {
   /* overflow: hidden; */
   height: 100%;
 }
-.fixed-header + .app-main {
-  padding-top: 50px;
-}
 </style>
 
 <style lang="scss">

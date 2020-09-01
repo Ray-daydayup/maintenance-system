@@ -59,25 +59,9 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
-import { login } from '@/api/login'
 export default {
   name: 'Login',
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('请输入正确用户名'))
-      } else {
-        callback()
-      }
-    }
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('密码不小于6位'))
-      } else {
-        callback()
-      }
-    }
     return {
       loginForm: {
         username: '',
@@ -85,11 +69,9 @@ export default {
       },
       loginRules: {
         username: [
-          { required: true, trigger: 'blur', validator: validateUsername }
+          { required: true, trigger: 'blur', message: '请输入用户名' }
         ],
-        password: [
-          { required: true, trigger: 'blur', validator: validatePassword }
-        ]
+        password: [{ required: true, trigger: 'blur', message: '请输入密码' }]
       },
       loading: false,
       passwordType: 'password'
@@ -118,8 +100,10 @@ export default {
       this.$refs.loginForm.validate(async (valid) => {
         if (valid) {
           this.loading = true
-          const res = await login(this.loginForm)
-          console.log(res)
+          const res = await this.$store.dispatch('user/login', this.loginForm)
+          if (res) {
+            this.$router.replace({ name: 'Home' })
+          }
           this.loading = false
         } else {
           console.log('error submit!!')
